@@ -6,7 +6,7 @@
 
 (def incr (atom (/ 1 0.1)))
 (def scl (atom 10))
-(def speed (atom 10))
+(def speed (atom 5))
 
 (defn perlin-vectors [rows cols zoff]
   (for [x (range 0 rows)
@@ -32,7 +32,7 @@
      :vectors (perlin-vectors rows cols 0.0)}))
 
 (defn update-point [point flowfield cols]
-  (p/edges (p/update (p/follow point flowfield scl cols))))
+  (p/edges (p/update (p/follow point flowfield @scl cols) @speed)))
 
 (defn old-update [point]
   (p/edges (p/update point @speed)))
@@ -43,8 +43,8 @@
    :rows (quot (q/height) @scl)
    :zoff (+ (:zoff state) 0.025)
    :vectors (:vectors state)
-   :points (map old-update (:points state))
-   #_(map #(update-point % (:vectors state) (:cols state)) (:points state))
+   :points #_(map old-update (:points state))
+   (map #(update-point % (:vectors state) (:cols state)) (:points state))
    })
 
 (defn draw-lines [x y state]

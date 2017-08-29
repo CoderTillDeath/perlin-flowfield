@@ -41,9 +41,6 @@
     (make-particle (v/add position velocity)
                    (v/limit (v/add velocity acceleration) speed))))
 
-(defn limit-speed [particle]
-    (+ 1 2))
-    
 (defn draw [particle]
   (let [[x y] (:pos particle)]
     (q/stroke-weight 5)
