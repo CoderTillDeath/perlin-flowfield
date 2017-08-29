@@ -11,9 +11,9 @@
 
 (defn random
   ([]
-   (from-angle (rand 360)))
+   (from-angle (rand Math/PI)))
   ([x]
-   (from-angle (rand 360) x))
+   (from-angle (rand Math/PI) x))
   ([x y]
    [(rand x)
     (rand y)]))
@@ -30,3 +30,8 @@
         [x2 y2] v2]
     [(+ x1 x2)
      (+ y1 y2)]))
+
+(defn perlin-vector [x y z]
+  (let [angle (* 2 Math/PI
+                 (q/noise x y z))]
+    (from-angle angle)))

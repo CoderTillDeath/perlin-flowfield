@@ -17,20 +17,36 @@
   {:cols (quot (q/width) @scl)
    :rows (quot (q/height) @scl)
    :zoff 0.0
-   :points (repeatedly 10 p/make-particle)
+   :points (repeatedly 25 p/make-particle)
    :vectors (repeatedly #([(rand) (rand)]))})
+
+(defn perlin-vectors [rows cols zoff]
+  (for [x (range 0 rows)
+        y (range 0 cols)]
+    (let [xoff (/ x @incr)
+          yoff (/ y @incr)]
+      (v/perlin-vector xoff yoff zoff))))
+    
+
+(defn update-point [point flowfield cols]
+  (p/edges (p/update (p/follow point flowfield scl cols))))
+
+(defn old-update [point]
+  (p/edges (p/update point)))
 
 (defn update-state [state]
   ; Update sketch state by changing circle color and position.
   {:cols (quot (q/width) @scl)
    :rows (quot (q/height) @scl)
    :zoff (+ (:zoff state) 0.025)
-   :points (map p/update (:points state))
-   :vectors (:vectors state)})
+   :vectors (:vectors state)
+   :points (map old-update (:points state))
+   #_(map #(update-point % (:vectors state) (:cols state)) (:points state))
+   })
 
 (defn draw-state [state]
   (q/background 255)
-  #_(doseq [x (range 0 (:cols state))
+  (doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
     (let [xoff (/ x @incr)
           yoff (/ y @incr)
@@ -42,7 +58,7 @@
           vect (v/from-angle angle)]
       ;(q/fill (* 255 (q/noise xoff yoff)))
       ;(q/rect (* x @scl) (* y @scl) @scl @scl)
-      (q/stroke 0)
+      (q/stroke-weight 1)
       (q/with-translation [xtrans ytrans]
         (q/with-rotation [angle]
           (q/line 0 0 @scl 0)))
