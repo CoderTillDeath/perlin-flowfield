@@ -28,7 +28,7 @@
     {:cols cols
      :rows rows
      :zoff 0.0
-     :points (repeatedly 25 p/make-particle)
+     :points (repeatedly 200 p/make-particle)
      :vectors (perlin-vectors rows cols 0.0)}))
 
 (defn update-point [point flowfield cols]
@@ -42,7 +42,7 @@
   {:cols (quot (q/width) @scl)
    :rows (quot (q/height) @scl)
    :zoff (+ (:zoff state) 0.025)
-   :vectors (:vectors state)
+   :vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
    :points #_(map old-update (:points state))
    (map #(update-point % (:vectors state) (:cols state)) (:points state))
    })
@@ -67,7 +67,7 @@
 
 (defn draw-state [state]
   (q/background 255)
-  (doseq [x (range 0 (:cols state))
+  #_(doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
     ;(draw-lines x y state)
     (let [index (+ x (* y (:cols state)))]
@@ -82,7 +82,7 @@
 
 (q/defsketch perlin
   :title "You spin my circle right round"
-  :size [200 200]
+  :size [400 400]
   ; setup function called only once, during sketch initialization.
   :setup setup
   ; update-state is called on each iteration before draw-state.
