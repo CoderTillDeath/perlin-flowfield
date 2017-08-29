@@ -36,13 +36,31 @@
                  (q/noise x y z))]
     (from-angle angle)))
 
-(defn angle [x y]
-  (let [a (Math/atan2 y x)]
-    (if (< a 0)
-      (+ a (* Math/PI 2))
-      a)))
+(defn angle
+  ([x y]
+   (let [a (Math/atan2 y x)]
+     (if (< a 0)
+       (+ a (* Math/PI 2))
+       a)))
+  ([[x y]]
+   (angle x y)))
 
-(defn draw-perlin [v x y]
-  (let [[x y] v
-        a (angle x y)]
-    (q/line 
+(defn magnitude [v]
+  (let [[x y] v]
+    (Math/sqrt (+ (* x x)
+                  (* y y)))))
+
+(defn draw-perlin [v x y scl]
+  (let [[xv yv] v
+        a (angle xv yv)]
+    (q/with-translation [(* x scl) (* y scl)]
+      (q/with-rotation [a]
+        (q/stroke-weight 1)
+        (q/line 0 0 scl 0)))))
+
+(defn limit [v speed]
+  (if (= speed -1)
+    v
+    (if (> (magnitude v) speed)
+      (from-angle (angle v) speed)
+      v)))

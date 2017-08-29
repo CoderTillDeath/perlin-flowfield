@@ -6,6 +6,15 @@
 
 (def incr (atom (/ 1 0.1)))
 (def scl (atom 10))
+(def speed (atom 10))
+
+(defn perlin-vectors [rows cols zoff]
+  (for [x (range 0 rows)
+        y (range 0 cols)]
+    (let [xoff (/ x @incr)
+          yoff (/ y @incr)]
+      (v/perlin-vector xoff yoff zoff))))
+
 
 (defn setup []
   ; Set frame rate to 30 frames per second.
@@ -22,18 +31,11 @@
      :points (repeatedly 25 p/make-particle)
      :vectors (perlin-vectors rows cols 0.0)}))
 
-(defn perlin-vectors [rows cols zoff]
-  (for [x (range 0 rows)
-        y (range 0 cols)]
-    (let [xoff (/ x @incr)
-          yoff (/ y @incr)]
-      (v/perlin-vector xoff yoff zoff))))
-
 (defn update-point [point flowfield cols]
   (p/edges (p/update (p/follow point flowfield scl cols))))
 
 (defn old-update [point]
-  (p/edges (p/update point)))
+  (p/edges (p/update point @speed)))
 
 (defn update-state [state]
   ; Update sketch state by changing circle color and position.
@@ -67,7 +69,12 @@
   (q/background 255)
   (doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
-    (draw-lines x y state)
+    ;(draw-lines x y state)
+    (let [index (+ x (* y (:cols state)))]
+      (v/draw-perlin (nth (:vectors state) index)
+                     x
+                     y
+                     @scl))
     )
   (doseq [i (:points state)]
     (p/draw i)))

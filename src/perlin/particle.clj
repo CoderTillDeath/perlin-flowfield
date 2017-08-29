@@ -9,13 +9,16 @@
   ([x y xspeed yspeed]
    (make-particle (v/make-vector x y)
                   (v/make-vector xspeed yspeed)))
-  ([x y speed]
-   (make-particle (v/make-vector x y)
-                  speed))
   ([pos vel]
+   (make-particle pos vel (v/make-vector 0.1 0.1)))
+  ([pos vel acc]
    {:pos pos
     :vel vel
-    :acc (v/make-vector 0 0)}))
+    :acc acc}))
+
+(defn make-particle-speed [x y speed]
+  (make-particle (v/make-vector x y)
+                 speed))
 
 (defn apply-force [particle force]
   (make-particle (:pos particle)
@@ -30,12 +33,13 @@
         index (+ xoff (* yoff cols))]
     (apply-force particle (nth flowfield index))))
 
-(defn update [particle]
+(defn update [particle speed]
   (let [{position :pos
-         velocity :vel}
+         velocity :vel
+         acceleration :acc}
         particle]
     (make-particle (v/add position velocity)
-                  velocity)))
+                   (v/limit (v/add velocity acceleration) speed))))
 
 (defn limit-speed [particle]
     (+ 1 2))
@@ -58,5 +62,6 @@
   (let [[x y] (:pos particle)
         newX (update-coordinate x (q/width))
         newY (update-coordinate y (q/height))]
-    (make-particle newX newY (:vel particle))))
+    (make-particle (v/make-vector newX newY)
+                   (:vel particle))))
 
