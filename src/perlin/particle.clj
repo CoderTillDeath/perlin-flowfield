@@ -41,10 +41,15 @@
     (make-particle (v/add position velocity)
                    (v/limit (v/add velocity acceleration) speed))))
 
-(defn draw [particle]
-  (let [[x y] (:pos particle)]
-    (q/stroke-weight 5)
-    (q/point x y)))
+(defn draw [particle prev]
+  (let [dist (v/distance (:pos prev) (:pos particle))
+        [x1 y1] (:pos prev)
+        [x2 y2] (:pos particle)]
+    (q/stroke 1 10)
+    (q/stroke-weight 1)
+    (if (< dist 10)
+      (q/line x1 y1 x2 y2)
+      (q/point x2 y2))))
 
 (defn only [x & rest]
   x)

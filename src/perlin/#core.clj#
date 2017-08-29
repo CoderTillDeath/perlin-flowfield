@@ -25,13 +25,11 @@
   ; setup function returns initial state. It contains
   ; circle color and position.
   (let [cols (quot (q/width) @scl)
-        rows (quot (q/height) @scl)
-        points (repeatedly 800 p/make-particle)]
+        rows (quot (q/height) @scl)]
     {:cols cols
      :rows rows
      :zoff 0.0
-     :points points
-     :prev points
+     :points (repeatedly 500 p/make-particle)
      :vectors (perlin-vectors rows cols 0.0)}))
 
 (defn update-point [point flowfield cols]
@@ -46,8 +44,8 @@
    :rows (quot (q/height) @scl)
    :zoff (+ (:zoff state) 0.025)
    :vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
-   :points (map #(update-point % (:vectors state) (:cols state)) (:points state))
-   :prev (:points state)
+   :points #_(map old-update (:points state))
+   (map #(update-point % (:vectors state) (:cols state)) (:points state))
    })
 
 (defn draw-lines [x y state]
@@ -79,13 +77,13 @@
                      y
                      @scl))
     )
-  (doseq [[i j] (map vector (:points state) (:prev state))]
-    (p/draw i j)))
+  (doseq [i (:points state)]
+    (p/draw i)))
   
 
 (q/defsketch perlin
   :title "You spin my circle right round"
-  :size [600 600]
+  :size [400 400]
   ; setup function called only once, during sketch initialization.
   :setup setup
   ; update-state is called on each iteration before draw-state.

@@ -32,9 +32,9 @@
      (+ y1 y2)]))
 
 (defn perlin-vector [x y z]
-  (let [angle (* 2 4 Math/PI
+  (let [angle (* 2 3 Math/PI
                  (q/noise x y z))]
-    (from-angle angle 4)))
+    (from-angle angle 5)))
 
 (defn angle
   ([x y]
@@ -64,3 +64,10 @@
     (if (> (magnitude v) speed)
       (from-angle (angle v) speed)
       v)))
+
+(defn sq [x]
+  (* x x))
+
+(defn distance [[x1 y1] [x2 y2]]
+  (Math/sqrt (+ (sq (- x2 x1))
+                (sq (- y2 y1)))))
