@@ -14,11 +14,13 @@
   (q/color-mode :rgb)
   ; setup function returns initial state. It contains
   ; circle color and position.
-  {:cols (quot (q/width) @scl)
-   :rows (quot (q/height) @scl)
-   :zoff 0.0
-   :points (repeatedly 25 p/make-particle)
-   :vectors (repeatedly #([(rand) (rand)]))})
+  (let [cols (quot (q/width) @scl)
+        rows (quot (q/height) @scl)]
+    {:cols cols
+     :rows rows
+     :zoff 0.0
+     :points (repeatedly 25 p/make-particle)
+     :vectors (perlin-vectors rows cols 0.0)}))
 
 (defn perlin-vectors [rows cols zoff]
   (for [x (range 0 rows)
@@ -26,7 +28,6 @@
     (let [xoff (/ x @incr)
           yoff (/ y @incr)]
       (v/perlin-vector xoff yoff zoff))))
-    
 
 (defn update-point [point flowfield cols]
   (p/edges (p/update (p/follow point flowfield scl cols))))
@@ -44,11 +45,8 @@
    #_(map #(update-point % (:vectors state) (:cols state)) (:points state))
    })
 
-(defn draw-state [state]
-  (q/background 255)
-  (doseq [x (range 0 (:cols state))
-        y (range 0 (:rows state))]
-    (let [xoff (/ x @incr)
+(defn draw-lines [x y state]
+  (let [xoff (/ x @incr)
           yoff (/ y @incr)
           zoff (:zoff state)
           xtrans (* x @scl)
@@ -63,7 +61,13 @@
         (q/with-rotation [angle]
           (q/line 0 0 @scl 0)))
       ;vect
-      )
+      ))
+
+(defn draw-state [state]
+  (q/background 255)
+  (doseq [x (range 0 (:cols state))
+        y (range 0 (:rows state))]
+    (draw-lines x y state)
     )
   (doseq [i (:points state)]
     (p/draw i)))

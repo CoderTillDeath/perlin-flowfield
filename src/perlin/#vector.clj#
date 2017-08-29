@@ -42,7 +42,9 @@
       (+ a (* Math/PI 2))
       a)))
 
-(defn draw-perlin [v x y]
+(defn draw-perlin [v x y scl]
   (let [[x y] v
         a (angle x y)]
-    (q/line 
+    (with-translation [x y]
+      (q/with-rotation [a]
+        (q/line 0 0 scl 0)))))
