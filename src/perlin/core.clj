@@ -24,11 +24,13 @@
   ; Update sketch state by changing circle color and position.
   {:cols (quot (q/width) @scl)
    :rows (quot (q/height) @scl)
-   :zoff (+ (:zoff state) 0.025)})
+   :zoff (+ (:zoff state) 0.025)
+   :points (map p/update (:points state))
+   :vectors (:vectors state)})
 
 (defn draw-state [state]
   (q/background 255)
-  (doseq [x (range 0 (:cols state))
+  #_(doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
     (let [xoff (/ x @incr)
           yoff (/ y @incr)
@@ -46,7 +48,10 @@
           (q/line 0 0 @scl 0)))
       ;vect
       )
-  ))
+    )
+  (doseq [i (:points state)]
+    (p/draw i)))
+  
 
 (q/defsketch perlin
   :title "You spin my circle right round"
