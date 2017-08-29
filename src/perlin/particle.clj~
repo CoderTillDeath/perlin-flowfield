@@ -1,0 +1,5 @@
+(ns perlin.particle
+  (:require [quil.core :as q]))
+
+(defn make-particle
+  ([] {:x (Math/random ()}

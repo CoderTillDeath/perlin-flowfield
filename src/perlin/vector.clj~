@@ -1,0 +1,7 @@
+(ns perlin.vector)
+
+(defn from-angle
+  ([ang]
+   ([(Math/cos ang)
+     (Math/sin ang)]))
+  ([ang limit]))
