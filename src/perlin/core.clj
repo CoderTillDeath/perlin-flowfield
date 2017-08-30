@@ -27,11 +27,12 @@
      :zoff 0.0
      :points points
      :prev points
-     :vectors (perlin-vectors rows cols 0.0)}))
+     ;:vectors (perlin-vectors rows cols 0.0)
+     }))
 
-(defn update-point [point flowfield cols]
+(defn update-point [point #_vectors cols zoff]
   (-> point
-      (p/follow flowfield @scl cols)
+      (p/follow #_vectors @scl cols zoff @incr)
       (p/move @speed)
       (p/edges)))
 
@@ -44,8 +45,12 @@
   {:cols (quot (q/width) @scl)
    :rows (quot (q/height) @scl)
    :zoff (+ (:zoff state) 0.025)
-   :vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
-   :points (map #(update-point % (:vectors state) (:cols state)) (:points state))
+   ;:vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
+   :points (map #(update-point %
+                               ;(:vectors state)
+                               (:cols state)
+                               (:zoff state))
+                (:points state))
    #_(map old-update (:points state))
    :prev (:points state)
    })

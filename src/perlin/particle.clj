@@ -23,12 +23,14 @@
 (defn apply-force [particle force]
   (update-in particle [:acc] #(v/add % force)))
  
-(defn follow [particle flowfield scl cols]
+(defn follow [particle #_flowfield scl cols zoff incr]
   (let [[x y] (:pos particle)
         xoff (int (/ x scl))
         yoff (int (/ y scl))
         index (+ xoff (* yoff cols))]
-    (apply-force particle (nth flowfield index))))
+    (apply-force particle
+                 (v/perlin-vector (/ xoff incr) (/ yoff incr) zoff)
+                 #_(nth flowfield index))))
 
 (defn move [particle speed]
   (let [{velocity :vel
