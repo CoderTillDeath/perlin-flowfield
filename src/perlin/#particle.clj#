@@ -23,7 +23,7 @@
 (defn apply-force [particle force]
   (update-in particle [:acc] #(v/add % force)))
  
-(defn follow [particle #_flowfield scl cols zoff incr #_perlin]
+(defn follow [particle #_flowfield scl cols zoff incr perlin]
   (let [[x y] (:pos particle)
         xoff (int (/ x scl))
         yoff (int (/ y scl))
