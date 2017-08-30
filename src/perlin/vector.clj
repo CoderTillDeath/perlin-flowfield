@@ -32,9 +32,9 @@
      (+ y1 y2)]))
 
 (defn perlin-vector [x y z]
-  (let [angle (* 2 3 Math/PI
+  (let [angle (* 2 2 Math/PI
                  (q/noise x y z))]
-    (from-angle angle 5)))
+    (from-angle angle 10)))
 
 (defn angle
   ([x y]
@@ -55,6 +55,7 @@
         a (angle xv yv)]
     (q/with-translation [(* x scl) (* y scl)]
       (q/with-rotation [a]
+        (q/stroke 0)
         (q/stroke-weight 1)
         (q/line 0 0 scl 0)))))
 

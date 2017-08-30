@@ -30,14 +30,16 @@
         index (+ xoff (* yoff cols))]
     (apply-force particle (nth flowfield index))))
 
-(defn move [particle speed]
-  (let [{velocity :vel
+(defn update [particle speed]
+  (let [{position :pos
+         velocity :vel
          acceleration :acc}
         particle]
    (-> particle
        (update :pos #(v/add % velocity))
-       (update :vel #(v/limit (v/add % acceleration) speed))
-       (update :acc (constantly (v/make-vector 0 0))))))
+       (update :vel #(() v/add % acceleration)))
+   (make-particle (v/add position velocity)
+                   (v/limit (v/add velocity acceleration) speed))))
 
 (defn draw [particle prev]
   (let [dist (v/distance (:pos prev) (:pos particle))
@@ -62,5 +64,6 @@
   (let [[x y] (:pos particle)
         newX (update-coordinate x (q/width))
         newY (update-coordinate y (q/height))]
-    (update particle :pos (constantly (v/make-vector newX newY)))))
+    (make-particle (v/make-vector newX newY)
+                   (:vel particle))))
 

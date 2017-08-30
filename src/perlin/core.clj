@@ -6,7 +6,7 @@
 
 (def incr (atom (/ 1 0.1)))
 (def scl (atom 10))
-(def speed (atom 3))
+(def speed (atom 5))
 
 (defn perlin-vectors [rows cols zoff]
   (for [x (range 0 rows)
@@ -15,18 +15,13 @@
           yoff (/ y @incr)]
       (v/perlin-vector xoff yoff zoff))))
 
-
 (defn setup []
   (q/background 255)
-  ; Set frame rate to 30 frames per second.
   (q/frame-rate 30)
-  ; Set color mode to HSB (HSV) instead of default RGB.
   (q/color-mode :rgb)
-  ; setup function returns initial state. It contains
-  ; circle color and position.
   (let [cols (quot (q/width) @scl)
         rows (quot (q/height) @scl)
-        points (repeatedly 800 p/make-particle)]
+        points (repeatedly 1000 p/make-particle)]
     {:cols cols
      :rows rows
      :zoff 0.0
@@ -35,13 +30,17 @@
      :vectors (perlin-vectors rows cols 0.0)}))
 
 (defn update-point [point flowfield cols]
-  (p/edges (p/update (p/follow point flowfield @scl cols) @speed)))
+  (-> point
+      (p/follow flowfield @scl cols)
+      (p/move @speed)
+      (p/edges)))
 
 (defn old-update [point]
-  (p/edges (p/update point @speed)))
+  (-> point
+      (p/move @speed)
+      (p/edges)))
 
 (defn update-state [state]
-  ; Update sketch state by changing circle color and position.
   {:cols (quot (q/width) @scl)
    :rows (quot (q/height) @scl)
    :zoff (+ (:zoff state) 0.025)
@@ -50,27 +49,9 @@
    :prev (:points state)
    })
 
-(defn draw-lines [x y state]
-  (let [xoff (/ x @incr)
-          yoff (/ y @incr)
-          zoff (:zoff state)
-          xtrans (* x @scl)
-          ytrans (* y @scl)
-          angle (* 2 Math/PI
-                   (q/noise xoff yoff zoff))
-          vect (v/from-angle angle)]
-      ;(q/fill (* 255 (q/noise xoff yoff)))
-      ;(q/rect (* x @scl) (* y @scl) @scl @scl)
-      (q/stroke-weight 1)
-      (q/with-translation [xtrans ytrans]
-        (q/with-rotation [angle]
-          (q/line 0 0 @scl 0)))
-      ;vect
-      ))
-
-(defn draw-state [state]
-;  (q/background 255)
-  #_(doseq [x (range 0 (:cols state))
+(defn draw-vectors [state]
+  (q/background 255)
+  (doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
     ;(draw-lines x y state)
     (let [index (+ x (* y (:cols state)))]
@@ -78,7 +59,10 @@
                      x
                      y
                      @scl))
-    )
+    ))
+
+(defn draw-state [state]
+  ;(draw-vectors state)
   (doseq [[i j] (map vector (:points state) (:prev state))]
     (p/draw i j)))
   
