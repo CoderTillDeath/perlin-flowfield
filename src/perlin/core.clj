@@ -46,11 +46,11 @@
    :zoff (+ (:zoff state) 0.025)
    :vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
    :points (map #(update-point % (:vectors state) (:cols state)) (:points state))
+   #_(map old-update (:points state))
    :prev (:points state)
    })
 
 (defn draw-vectors [state]
-  (q/background 255)
   (doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
     ;(draw-lines x y state)
@@ -62,6 +62,7 @@
     ))
 
 (defn draw-state [state]
+  (q/background 255)
   ;(draw-vectors state)
   (doseq [[i j] (map vector (:points state) (:prev state))]
     (p/draw i j)))
