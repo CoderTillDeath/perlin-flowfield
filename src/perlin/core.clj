@@ -21,7 +21,7 @@
   (q/color-mode :rgb)
   (let [cols (quot (q/width) @scl)
         rows (quot (q/height) @scl)
-        points (repeatedly 1000 p/make-particle)]
+        points (repeatedly 2000 p/make-particle)]
     {:cols cols
      :rows rows
      :zoff 0.0
@@ -30,9 +30,9 @@
      ;:vectors (perlin-vectors rows cols 0.0)
      }))
 
-(defn update-point [point #_vectors cols zoff]
+(defn update-point [point #_vectors cols zoff perlin]
   (-> point
-      (p/follow #_vectors @scl cols zoff @incr)
+      (p/follow #_vectors @scl cols zoff @incr perlin)
       (p/move @speed)
       (p/edges)))
 
@@ -42,18 +42,20 @@
       (p/edges)))
 
 (defn update-state [state]
-  {:cols (quot (q/width) @scl)
-   :rows (quot (q/height) @scl)
-   :zoff (+ (:zoff state) 0.025)
-   ;:vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
-   :points (map #(update-point %
-                               ;(:vectors state)
-                               (:cols state)
-                               (:zoff state))
-                (:points state))
-   #_(map old-update (:points state))
-   :prev (:points state)
-   })
+  (let [perlin (memoize q/noise)]
+    {:cols (quot (q/width) @scl)
+     :rows (quot (q/height) @scl)
+     :zoff (+ (:zoff state) 0.025)
+                                        ;:vectors (perlin-vectors (:rows state) (:cols state) (:zoff state))
+     :points (map #(update-point %
+                                        ;(:vectors state)
+                                 (:cols state)
+                                 (:zoff state)
+                                 perlin)
+                  (:points state))
+     #_(map old-update (:points state))
+     :prev (:points state)
+     }))
 
 (defn draw-vectors [state]
   (doseq [x (range 0 (:cols state))

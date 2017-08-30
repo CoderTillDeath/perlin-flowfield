@@ -31,10 +31,13 @@
     [(+ x1 x2)
      (+ y1 y2)]))
 
-(defn perlin-vector [x y z]
-  (let [angle (* 2 2 Math/PI
-                 (q/noise x y z))]
-    (from-angle angle 6)))
+(defn perlin-vector
+  ([x y z]
+   (perlin-vector x y z q/noise))
+  ([x y z perlin]
+   (let [angle (* 2 2 Math/PI
+                  (perlin x y z))]
+     (from-angle angle 6))))
 
 (defn angle
   ([x y]
