@@ -1,7 +1,7 @@
 (ns perlin.particle
   (:require [quil.core :as q]
-            [perlin.vector :as v]
-            [perlin.core :as p]))
+            [perlin.vector :as v]))
+
 
 (defn make-particle
   ([]
@@ -43,18 +43,6 @@
        (update :pos #(v/add % velocity))
        (update :vel #(v/limit (v/add % acceleration) speed)) 
        (update :acc (constantly (v/make-vector 0 0))))))
-
-(defn draw [particle prev]
-  (let [dist (v/distance (:pos prev) (:pos particle))
-        [x1 y1] (:pos prev)
-        [x2 y2] (:pos particle)]
-    (if @p/fancy
-      (q/stroke 1 5)
-      (q/stroke 1))
-    (q/stroke-weight 1)
-    (if (< dist 100)
-      (q/line x1 y1 x2 y2)
-      (q/point x2 y2))))
 
 (defn only [x & rest]
   x)

@@ -21,7 +21,7 @@
   (q/color-mode :rgb)
   (let [cols (quot (q/width) @scl)
         rows (quot (q/height) @scl)
-        points (repeatedly 1000 p/make-particle)]
+        points (repeatedly 2000 p/make-particle)]
     {:cols cols
      :rows rows
      :zoff 0.0
@@ -55,6 +55,18 @@
    :prev (:points state)
    })
 
+(defn draw-particle [particle prev]
+  (let [dist (v/distance (:pos prev) (:pos particle))
+        [x1 y1] (:pos prev)
+        [x2 y2] (:pos particle)]
+    (if @fancy
+      (q/stroke 1 5)
+      (q/stroke 1))
+    (q/stroke-weight 1)
+    (if (< dist 100)
+      (q/line x1 y1 x2 y2)
+      (q/point x2 y2))))
+
 (defn draw-vectors [state]
   (doseq [x (range 0 (:cols state))
         y (range 0 (:rows state))]
@@ -81,7 +93,7 @@
     (q/background 255)
     (draw-field state))
   (doseq [[i j] (map vector (:points state) (:prev state))]
-    (p/draw i j)))
+    (draw-particle i j)))
   
 
 (q/defsketch perlin
