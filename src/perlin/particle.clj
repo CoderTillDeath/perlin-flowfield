@@ -1,6 +1,7 @@
 (ns perlin.particle
   (:require [quil.core :as q]
-            [perlin.vector :as v]))
+            [perlin.vector :as v]
+            [perlin.core :as p]))
 
 (defn make-particle
   ([]
@@ -27,9 +28,11 @@
   (let [[x y] (:pos particle)
         xoff (int (/ x scl))
         yoff (int (/ y scl))
-        index (+ xoff (* yoff cols))]
+        index (+ xoff (* yoff cols))
+        force (v/perlin-vector (/ xoff incr) (/ yoff incr) zoff)]
+    #_(v/draw-perlin force xoff yoff scl)
     (apply-force particle
-                 (v/perlin-vector (/ xoff incr) (/ yoff incr) zoff)
+                 force
                  #_(nth flowfield index))))
 
 (defn move [particle speed]
@@ -45,7 +48,9 @@
   (let [dist (v/distance (:pos prev) (:pos particle))
         [x1 y1] (:pos prev)
         [x2 y2] (:pos particle)]
-    (q/stroke 1 #_10)
+    (if @p/fancy
+      (q/stroke 1 5)
+      (q/stroke 1))
     (q/stroke-weight 1)
     (if (< dist 100)
       (q/line x1 y1 x2 y2)

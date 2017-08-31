@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [perlin.particle :as p]
             [perlin.vector :as v]))
-
+(def fancy (atom true))
 (def incr (atom (/ 1 0.1)))
 (def scl (atom 10))
 (def speed (atom 5))
@@ -66,9 +66,20 @@
                      @scl))
     ))
 
+(defn draw-field [state]
+  (doseq [x (range 0 (:cols state))
+          y (range 0 (:rows state))]
+    (v/draw-perlin (v/perlin-vector (/ x @incr)
+                                    (/ y @incr)
+                                    (:zoff state))
+                   x
+                   y
+                   @scl)))
+
 (defn draw-state [state]
-  (q/background 255)
-  ;(draw-vectors state)
+  (when (not @fancy)
+    (q/background 255)
+    (draw-field state))
   (doseq [[i j] (map vector (:points state) (:prev state))]
     (p/draw i j)))
   
